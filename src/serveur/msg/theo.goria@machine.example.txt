@@ -1,0 +1,49 @@
+From : John Doe <jdoe@machine.example>
+TO: Theo Goria <theo.goria@machine.example>
+Subject: Saying Hello
+DATE: Fri, 21 Nov 1997 09:55:06 -0600
+Message_ID: <1234@local.machine.example>
+
+This is a message just to say hello.
+So, "Hello".
+.
+From : Christine Gertosio <christine.gertosio@univ-lyon1.fr>
+TO: Theo Goria <theo.goria@machine.example>
+Subject: travail POP3
+DATE: Fri, 21 Nov 1997 09:55:06 -0600
+Message_ID: <1235@local.machine.example>
+
+Bonjour, 
+
+je vous ai envoyé  individuellement par mail les commentaires du TP POP3 question 1.   Je précise le barème :
+
+Analyse & dossier  sur 20
+
+·         Graphe Automates serveur = /7
+
+·         Table serveur= /3
+
+·         Graphe Automate client = /5
+
+·         Compte rendu= /5
+
+ 
+
+Réalisation/ 20
+
+·         démo  serveur  /12
+
+·         démo client /8
+Cordialement
+.
+From : Avanza <avanza@machine.example>
+TO: Theo Goria <theo.goria@machine.example>
+Subject: Saying Hello
+DATE: Fri, 21 Nov 1997 09:55:06 -0600
+Message_ID: <1236@local.machine.example>
+
+Bonjour à tous, 
+
+L'association Avanza vous propose un panier de fruits et légumes locaux, de saison, et cultivés en agriculture raisonnée, pour le mercredi 15 mars ! 
+
+.
