@@ -82,6 +82,7 @@ public class Communication implements Runnable{
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
                                 break;
                             default:
                                 out.write(("503 invalid request").getBytes());
@@ -90,7 +91,7 @@ public class Communication implements Runnable{
                     } else if (requestSplitted.get(0).equals("MAIL")){
                         switch (state) {
                             case 3: //NEW MESSAGE
-                                if(requestSplitted.size() > 3 && requestSplitted.get(1).equals("FROM")){
+                                if(requestSplitted.size() >= 3 && requestSplitted.get(1).equals("FROM")){
                                     userName = requestSplitted.get(2);
                                     out.write(("250 OK").getBytes());
                                     state = 4;
@@ -100,22 +101,112 @@ public class Communication implements Runnable{
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
                                 break;
                             default:
                                 out.write("503 invalid request\r\n".getBytes());
                                 break;
                         }
                     } else if (requestSplitted.get(0).equals("RCPT")){
+                        switch (state) {
+                            case 4: //SENDER
+                                if (User.getInstance().isUser((requestSplitted.get(1)))){
+                                    recipients.add(requestSplitted.get(1));
+                                    out.write("250 OK".getBytes());
+                                    state = 5;
+                                } else {
+                                    out.write("550 No such user here.".getBytes());
+                                }
+                                break;
+                            case 5: //RECEIVER
+                                if (User.getInstance().isUser((requestSplitted.get(1)))){
+                                    recipients.add(requestSplitted.get(1));
+                                    out.write("250 OK".getBytes());
+                                } else {
+                                    out.write("550 No such user here.".getBytes());
+                                }
+                                break;
+                            case 6: //DATA
+                                data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
+                                break;
+                            default:
+                                out.write(("503 invalid request").getBytes());
+                                break;
+                        }
 
                     } else if (requestSplitted.get(0).equals("DATA")){
+                        switch (state) {
+                            case 5: //RECEIVER
+                                out.write(("354 Start Mail Input; end with <CR><LF>.<CR><LF>").getBytes());
+                                state = 6;
+                                break;
+                            case 6: //DATA
+                                data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
+                                break;
+                            default:
+                                out.write(("503 invalid request").getBytes());
+                                break;
+                        }
 
                     } else if (requestSplitted.get(0).equals("RSET")){
+                        switch (state) {
+                            case 4: //SENDER
+                            case 5: //RECEIVER
+                                userName = null;
+                                recipients.clear();
+                                state = 3;
+                                break;
+                            case 6: //DATA
+                                data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
+                                break;
+                            default:
+                                out.write(("503 invalid request").getBytes());
+                                break;
+                        }
 
                     } else if (requestSplitted.get(0).equals("QUIT")){
+                        switch (state) {
+                            case 6: //DATA
+                                data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
+                                break;
+                            default:
+                                state = 1;
+                                break;
+                        }
 
                     } else if (requestSplitted.get(0).equals(".")){
+                        switch (state) {
+                            case 6: //DATA
+                                data.append(".\r\n");
+                                for (String dest : recipients){
+                                    PrintWriter outFile = new PrintWriter("msg/" + dest + ".txt");
+                                    outFile.print(data);
+                                    outFile.close();
+                                }
+                                userName = null;
+                                recipients.clear();
+                                out.write("250 OK".getBytes());
+                                state = 3;
+                                break;
+                            default:
+                                out.write(("500 not a request").getBytes());
+                                break;
+                        }
 
                     } else {
+                        switch (state) {
+                            case 6: //DATA
+                                data.append(request).append("\r\n");
+                                out.write("250 OK".getBytes());
+                                break;
+                            default:
+                                out.write(("500 not a request").getBytes());
+                                break;
+                        }
 
                     }
                     /*switch (state) {
@@ -133,6 +224,7 @@ public class Communication implements Runnable{
                             break;
                          case 6: //DATA
                              data.append(request).append("\r\n");
+                             out.write("250 OK".getBytes());
                             break;
                         default:
                             out.write(("503 invalid request").getBytes());
