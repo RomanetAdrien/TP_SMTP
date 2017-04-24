@@ -6,7 +6,10 @@ import java.io.*;
 import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 
@@ -14,6 +17,8 @@ public class Client {
     private SSLSocket socket;
     private InetAddress server;
     private String timestamp;
+    private String user;
+    private String usermail;
     private int port;
     private int state;/*
         0 : Closed
@@ -26,6 +31,8 @@ public class Client {
     */
 
     public Client(InetAddress server, int port) {
+        this.user = "Larry Skywalker";
+        this.usermail = "larryskywalker@hotmail.com";
         this.server = server;
         this.port = port;
         this.state=1;
@@ -142,6 +149,8 @@ public class Client {
              } else if(request.substring(0, 4).equals("DATA")){
                  switch (state) {
                      default:
+                         out.write((request + "\r\n").getBytes());
+                         this.getOneLine(in);
                          break;
                  }
              } else if(request.substring(0, 4).equals("QUIT")){
@@ -155,6 +164,38 @@ public class Client {
         }
         socket.close();
 
+    }
+
+    private ArrayList<String> writeMessage() {
+        ArrayList<String> message = new ArrayList<>();
+        String line;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        line = "Date: " + dateFormat.format(date);
+        message.add(line);
+
+        line = "From: " + user + " <" + usermail + ">";
+        message.add(line);
+
+        line = "Subject: ";
+        System.out.println("Sujet du message :");
+        Scanner sc = new Scanner(System.in);
+        String str = sc.nextLine();
+        line += str;
+        message.add(line);
+
+        line = "To: ";
+
+        message.add(line);
+
+        System.out.println("Entrez le corps du message :");
+        while (!line.equals(".")) {
+            str = sc.nextLine();
+            line = str;
+            message.add(line);
+        }
+        return message;
+    
     }
 
     private boolean getOneLine(BufferedReader in) throws IOException {
