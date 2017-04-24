@@ -15,7 +15,15 @@ public class Client {
     private InetAddress server;
     private String timestamp;
     private int port;
-    private int state;
+    private int state;/*
+        0 : Closed
+        1 : Waiting
+        2 : Connected
+        3 : Sender
+        4 : Receiver
+        5 : DataWaiting
+        6 : Data
+    */
 
     public Client(InetAddress server, int port) {
         this.server = server;
@@ -72,7 +80,7 @@ public class Client {
                         }
                     }
                     if(timestamp.length() > 0){
-                        this.state = 2;
+                        //this.state = 2;
                     } else {
                         System.out.println("error : no timestamp received");
                     }
@@ -86,35 +94,36 @@ public class Client {
             String str = sc.nextLine();
             request = str;
 
-            if (request.substring(0, 4).equals("APOP")) {
+             if (request.substring(0, 4).equals("EHLO")||request.substring(0, 4).equals("HELO")){
+                switch (state) {
+                    case 1:
+                        out.write((request + "\r\n").getBytes());
+                        this.getOneLine(in);
+                        this.state=2;
+                        break;
+                    default:
+                        System.out.println("Requête non valide");
+                        break;
+                }
+            }else if ((request.substring(0, 4).equals("MAIL"))) {
                 switch (state) {
                     case 2:
-                        strSplitted = new ArrayList<>();
-                        s = new Scanner(request).useDelimiter("\\s+");
-                        while (s.hasNext()) {
-                            strSplitted.add(s.next());
-                        }
-                        try {
-                            if (strSplitted.size() > 2) {
-                                out.write((strSplitted.get(0) + " " + strSplitted.get(1) + " ").getBytes());
-                                out.write(this.getAPOPMD5(strSplitted.get(2)).getBytes());
-                                out.write(("\r\n").getBytes());
-                                this.state = 3;
-                                this.getOneLine(in);
-                            } else {
-                                System.out.println("mot de passe et/ou identifiant manquant");
-                            }
-                        } catch (NoSuchAlgorithmException e) {
-                            System.out.println(e.getMessage());
-                        }
+                        out.write((request + "\r\n").getBytes());
+                        this.getOneLine(in);
+                        this.state=3;
                         break;
                     default:
-                        System.out.println("Requète non valide");
+                        System.out.println("Requête non valide");
                         break;
                 }
-            } else if (request.substring(0, 4).equals("STAT")){
+            } else if (request.substring(0, 4).equals("RCPT")) {
                 switch (state) {
-                    case 5:
+                    case 3:
+                        out.write((request + "\r\n").getBytes());
+                        this.getOneLine(in);
+                        this.state=4;
+                        break;
+                    case 4:
                         out.write((request + "\r\n").getBytes());
                         this.getOneLine(in);
                         break;
@@ -122,28 +131,30 @@ public class Client {
                         System.out.println("Requête non valide");
                         break;
                 }
-            }else if ((request.substring(0, 4).equals("LIST"))
-                    || (request.substring(0, 4).equals("RETR"))) {
-                switch (state) {
-                    case 5:
-                        out.write((request + "\r\n").getBytes());
-                        if(this.getOneLine(in))
-                            this.getNextLines(in);
-                        break;
-                    default:
-                        System.out.println("Requête non valide");
-                        break;
-                }
-            } else if (request.substring(0, 4).equals("QUIT")) {
-                switch (state) {
-                    default:
-                        out.write((request + "\r\n").getBytes());
-                        this.getOneLine(in);
-                        this.state = 0;
-                        break;
-                }
-            }
+            } else if(request.substring(0, 4).equals("RSET")){
+                 switch (state) {
+                     default:
+                         out.write((request + "\r\n").getBytes());
+                         this.getOneLine(in);
+                         this.state=1;
+                         break;
+                 }
+             } else if(request.substring(0, 4).equals("DATA")){
+                 switch (state) {
+                     default:
+                         break;
+                 }
+             } else if(request.substring(0, 4).equals("QUIT")){
+                 out.write((request + "\r\n").getBytes());
+                 this.getOneLine(in);
+                 this.state=0;
+                 break;
+             } else{
+                 System.out.println("Invalid Request");
+             }
         }
+        socket.close();
+
     }
 
     private boolean getOneLine(BufferedReader in) throws IOException {
