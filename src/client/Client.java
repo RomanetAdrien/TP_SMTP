@@ -105,8 +105,9 @@ public class Client {
                 switch (state) {
                     case 1:
                         out.write((request + "\r\n").getBytes());
-                        this.getOneLine(in);
-                        this.state=2;
+                        if(this.getOneLine(in)){
+                            this.state=2;
+                        }
                         break;
                     default:
                         System.out.println("Requête non valide");
@@ -116,8 +117,9 @@ public class Client {
                 switch (state) {
                     case 2:
                         out.write((request + "\r\n").getBytes());
-                        this.getOneLine(in);
-                        this.state=3;
+                        if(this.getOneLine(in)){
+                            this.state=3;
+                        }
                         break;
                     default:
                         System.out.println("Requête non valide");
@@ -127,8 +129,9 @@ public class Client {
                 switch (state) {
                     case 3:
                         out.write((request + "\r\n").getBytes());
-                        this.getOneLine(in);
-                        this.state=4;
+                        if(this.getOneLine(in)){
+                            this.state=4;
+                        }
                         break;
                     case 4:
                         out.write((request + "\r\n").getBytes());
@@ -155,8 +158,9 @@ public class Client {
                  }
              } else if(request.substring(0, 4).equals("QUIT")){
                  out.write((request + "\r\n").getBytes());
-                 this.getOneLine(in);
-                 this.state=0;
+                 if(this.getOneLine(in)){
+                     this.state=0;
+                 }
                  break;
              } else{
                  System.out.println("Invalid Request");
@@ -209,29 +213,12 @@ public class Client {
                 responseSplitted.add(s.next());
             }
             if(responseSplitted.size()>0) {
-                if (responseSplitted.get(0).contains("OK")) {
-                    switch (state) {
-                        case 3:
-                            System.out.println("connecté");
-                            this.state = 5;
-                            break;
-                        default:
-                            break;
-                    }
-                    System.out.println(response);
+                if (responseSplitted.get(0).contains("250")) {
                     return true;
-                } else if (responseSplitted.get(0).contains("ERR")) {
-                    switch (state) {
-                        case 3:
-                            this.state = 2;
-                            break;
-                        default:
-                            break;
                     }
-                    System.out.println(response);
+                } else {
                     return false;
-                }
-            }
+                    }
         }while (responseSplitted.size()==0);
         return false;
     }
