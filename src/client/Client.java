@@ -145,15 +145,20 @@ public class Client {
                  switch (state) {
                      default:
                          out.write((request + "\r\n").getBytes());
-                         this.getOneLine(in);
-                         this.state=1;
+                         if(this.getOneLine(in)){
+                             this.state=1;
+                         }
                          break;
                  }
              } else if(request.substring(0, 4).equals("DATA")){
                  switch (state) {
                      default:
                          out.write((request + "\r\n").getBytes());
-                         this.getOneLine(in);
+                         String response2 = in.readLine();
+                         System.out.println(response2);
+                         if(response2.contains("354")){
+                             out.write((writeMessage().toString()+"\r\n").getBytes());
+                         }
                          break;
                  }
              } else if(request.substring(0, 4).equals("QUIT")){
