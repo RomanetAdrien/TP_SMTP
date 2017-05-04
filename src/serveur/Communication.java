@@ -77,15 +77,15 @@ public class Communication implements Runnable{
                                     out.write(("250 "+Server.domainName+"\r\n").getBytes());
                                     state=3;
                                 } else {
-                                    out.write("501 client domain missing".getBytes());
+                                    out.write("501 client domain missing\r\n".getBytes());
                                 }
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write("250 OK\r\n".getBytes());
                                 break;
                             default:
-                                out.write(("503 invalid request").getBytes());
+                                out.write(("503 invalid request\r\n").getBytes());
                                 break;
                         }
                     } else if (requestSplitted.get(0).equals("MAIL")){
@@ -93,15 +93,15 @@ public class Communication implements Runnable{
                             case 3: //NEW MESSAGE
                                 if(requestSplitted.size() >= 3 && requestSplitted.get(1).equals("FROM")){
                                     userName = requestSplitted.get(2);
-                                    out.write(("250 OK").getBytes());
+                                    out.write(("250 OK\r\n").getBytes());
                                     state = 4;
                                 } else {
-                                    out.write("501 missing parameters".getBytes());
+                                    out.write("501 missing parameters\r\n".getBytes());
                                 }
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
                                 out.write("503 invalid request\r\n".getBytes());
@@ -112,41 +112,41 @@ public class Communication implements Runnable{
                             case 4: //SENDER
                                 if (User.getInstance().isUser((requestSplitted.get(1)))){
                                     recipients.add(requestSplitted.get(1));
-                                    out.write("250 OK".getBytes());
+                                    out.write(("250 OK\r\n").getBytes());
                                     state = 5;
                                 } else {
-                                    out.write("550 No such user here.".getBytes());
+                                    out.write("550 No such user here.\r\n".getBytes());
                                 }
                                 break;
                             case 5: //RECEIVER
                                 if (User.getInstance().isUser((requestSplitted.get(1)))){
                                     recipients.add(requestSplitted.get(1));
-                                    out.write("250 OK".getBytes());
+                                    out.write(("250 OK\r\n").getBytes());
                                 } else {
-                                    out.write("550 No such user here.".getBytes());
+                                    out.write("550 No such user here.\r\n".getBytes());
                                 }
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
-                                out.write(("503 invalid request").getBytes());
+                                out.write("550 No such user here.\r\n".getBytes());
                                 break;
                         }
 
                     } else if (requestSplitted.get(0).equals("DATA")){
                         switch (state) {
                             case 5: //RECEIVER
-                                out.write(("354 Start Mail Input; end with <CR><LF>.<CR><LF>").getBytes());
+                                out.write(("354 Start Mail Input; end with <CR><LF>.<CR><LF>\r\n").getBytes());
                                 state = 6;
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
-                                out.write(("503 invalid request").getBytes());
+                                out.write(("503 invalid request\r\n").getBytes());
                                 break;
                         }
 
@@ -160,10 +160,10 @@ public class Communication implements Runnable{
                                 break;
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
-                                out.write(("503 invalid request").getBytes());
+                                out.write(("503 invalid request\r\n").getBytes());
                                 break;
                         }
 
@@ -171,7 +171,7 @@ public class Communication implements Runnable{
                         switch (state) {
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
                                 state = 1;
@@ -189,11 +189,11 @@ public class Communication implements Runnable{
                                 }
                                 userName = null;
                                 recipients.clear();
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 state = 3;
                                 break;
                             default:
-                                out.write(("500 not a request").getBytes());
+                                out.write(("500 not a request\r\n").getBytes());
                                 break;
                         }
 
@@ -201,10 +201,10 @@ public class Communication implements Runnable{
                         switch (state) {
                             case 6: //DATA
                                 data.append(request).append("\r\n");
-                                out.write("250 OK".getBytes());
+                                out.write(("250 OK\r\n").getBytes());
                                 break;
                             default:
-                                out.write(("500 not a request").getBytes());
+                                out.write(("500 not a request\r\n").getBytes());
                                 break;
                         }
 

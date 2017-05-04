@@ -203,12 +203,13 @@ public class Client {
         ArrayList<String> responseSplitted = new ArrayList<>();
         do {
             response = in.readLine();
+            System.out.println(response);
             Scanner s = new Scanner(response).useDelimiter("\\s+");
             while (s.hasNext()) {
                 responseSplitted.add(s.next());
             }
             if(responseSplitted.size()>0) {
-                if (responseSplitted.get(0).equals("+OK")) {
+                if (responseSplitted.get(0).contains("OK")) {
                     switch (state) {
                         case 3:
                             System.out.println("connecté");
@@ -219,7 +220,7 @@ public class Client {
                     }
                     System.out.println(response);
                     return true;
-                } else if (responseSplitted.get(0).equals("-ERR")) {
+                } else if (responseSplitted.get(0).contains("ERR")) {
                     switch (state) {
                         case 3:
                             this.state = 2;
