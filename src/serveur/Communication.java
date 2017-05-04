@@ -16,15 +16,11 @@ import java.util.Scanner;
 public class Communication implements Runnable{
 
     private SSLSocket conn_cli;
-    private int ID;
     private int state;
-    private Timestamp timestamp;
 
     public Communication(SSLSocket conn_cli, int ID) {
         this.conn_cli = conn_cli;
-        this.ID = ID;
         this.state = 1;
-        this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     private void start() throws IOException {
@@ -68,6 +64,7 @@ public class Communication implements Runnable{
                             requestSplitted.add(s.next());
                         }
                         System.out.println(request);
+
                     } else throw new Exception();
                     if(requestSplitted.get(0).equals("EHLO")){
                         switch (state) {
@@ -108,31 +105,40 @@ public class Communication implements Runnable{
                                 break;
                         }
                     } else if (requestSplitted.get(0).equals("RCPT")){
-                        switch (state) {
-                            case 4: //SENDER
-                                if (User.getInstance().isUser((requestSplitted.get(1)))){
-                                    recipients.add(requestSplitted.get(1));
-                                    out.write(("250 OK\r\n").getBytes());
-                                    state = 5;
-                                } else {
-                                    out.write("550 No such user here.\r\n".getBytes());
+                        if(requestSplitted.size() > 1 && requestSplitted.get(1).equals("TO")) {
+                            if (requestSplitted.size() > 2) {
+                                switch (state) {
+                                    case 4: //SENDER
+                                        /*if (User.getInstance().isUser((requestSplitted.get(2)))) {
+                                            recipients.add(requestSplitted.get(2));
+                                            out.write(("250 OK\r\n").getBytes());
+                                            state = 5;
+                                        } else {
+                                            out.write("550 No such user here.\r\n".getBytes());
+                                        }
+                                        break;*/
+                                    case 5: //RECEIVER
+                                        if (User.getInstance().isUser((requestSplitted.get(2)))) {
+                                            recipients.add(requestSplitted.get(2));
+                                            out.write(("250 OK\r\n").getBytes());
+                                        } else {
+                                            out.write("550 No such user here.\r\n".getBytes());
+                                        }
+                                        state = 5;
+                                        break;
+                                    case 6: //DATA
+                                        data.append(request).append("\r\n");
+                                        out.write(("250 OK\r\n").getBytes());
+                                        break;
+                                    default:
+                                        out.write("550 No such user here.\r\n".getBytes());
+                                        break;
                                 }
-                                break;
-                            case 5: //RECEIVER
-                                if (User.getInstance().isUser((requestSplitted.get(1)))){
-                                    recipients.add(requestSplitted.get(1));
-                                    out.write(("250 OK\r\n").getBytes());
-                                } else {
-                                    out.write("550 No such user here.\r\n".getBytes());
-                                }
-                                break;
-                            case 6: //DATA
-                                data.append(request).append("\r\n");
-                                out.write(("250 OK\r\n").getBytes());
-                                break;
-                            default:
-                                out.write("550 No such user here.\r\n".getBytes());
-                                break;
+                            } else {
+                                out.write("501 missing parameters\r\n".getBytes());
+                            }
+                        } else {
+                            out.write(("503 invalid request\r\n").getBytes());
                         }
 
                     } else if (requestSplitted.get(0).equals("DATA")){
@@ -183,14 +189,20 @@ public class Communication implements Runnable{
                             case 6: //DATA
                                 data.append(".\r\n");
                                 for (String dest : recipients){
-                                    PrintWriter outFile = new PrintWriter("msg/" + dest + ".txt");
-                                    outFile.print(data);
-                                    outFile.close();
+                                    try {
+                                        FileWriter outFile = new FileWriter("src/serveur/msg/" + dest + ".txt",true);
+                                        outFile.write("\r\n");
+                                        outFile.write(data.toString());
+                                        outFile.close();
+                                        out.write(("250 OK\r\n").getBytes());
+                                        state = 3;
+                                    } catch (FileNotFoundException ex) {
+                                        System.out.println(ex.getMessage());
+                                        out.write("500 internal error\r\n".getBytes());
+                                    }
                                 }
                                 userName = null;
                                 recipients.clear();
-                                out.write(("250 OK\r\n").getBytes());
-                                state = 3;
                                 break;
                             default:
                                 out.write(("500 not a request\r\n").getBytes());
@@ -231,7 +243,7 @@ public class Communication implements Runnable{
                             break;
                     }*/
                 } catch (Exception ex) {
-                    out.write("-ERR internal error\r\n".getBytes());
+                    out.write("500 internal error\r\n".getBytes());
                     requestSplitted.add("QUIT");
                 }
 

@@ -96,80 +96,87 @@ public class Client {
                     break;
             }
         }
-        while (state > 0){
+        while (state > 0) {
             System.out.println("Veuillez saisir une requète :");
             String str = sc.nextLine();
             request = str;
-
-             if (request.substring(0, 4).equals("EHLO")||request.substring(0, 4).equals("HELO")){
-                switch (state) {
-                    case 1:
-                        out.write((request + "\r\n").getBytes());
-                        if(this.getOneLine(in)){
-                            this.state=2;
-                        }
-                        break;
-                    default:
-                        System.out.println("Requête non valide");
-                        break;
+            if(request.length() > 3) {
+                if (request.substring(0, 4).equals("EHLO") || request.substring(0, 4).equals("HELO")) {
+                    switch (state) {
+                        case 1:
+                            out.write((request + "\r\n").getBytes());
+                            if (this.getOneLine(in)) {
+                                this.state = 2;
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid Request");
+                            break;
+                    }
+                } else if ((request.substring(0, 4).equals("MAIL"))) {
+                    switch (state) {
+                        case 2:
+                            out.write((request + "\r\n").getBytes());
+                            if (this.getOneLine(in)) {
+                                this.state = 3;
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid Request");
+                            break;
+                    }
+                } else if (request.substring(0, 4).equals("RCPT")) {
+                    switch (state) {
+                        case 3:
+                            out.write((request + "\r\n").getBytes());
+                            if (this.getOneLine(in)) {
+                                this.state = 4;
+                            }
+                            break;
+                        case 4:
+                            out.write((request + "\r\n").getBytes());
+                            this.getOneLine(in);
+                            break;
+                        default:
+                            System.out.println("Invalid Request");
+                            break;
+                    }
+                } else if (request.substring(0, 4).equals("RSET")) {
+                    switch (state) {
+                        default:
+                            out.write((request + "\r\n").getBytes());
+                            if (this.getOneLine(in)) {
+                                this.state = 1;
+                            }
+                            break;
+                    }
+                } else if (request.substring(0, 4).equals("DATA")) {
+                    switch (state) {
+                        default:
+                            out.write((request + "\r\n").getBytes());
+                            String response2 = in.readLine();
+                            System.out.println(response2);
+                            if (response2.contains("354")) {
+                                for(String msg : writeMessage()){
+                                    out.write((msg+"\r\n").getBytes());
+                                }
+                            } if (this.getOneLine(in)) {
+                                this.state = 2;
+                            }
+                            break;
+                    }
+                } else if (request.substring(0, 4).equals("QUIT")) {
+                    out.write((request + "\r\n").getBytes());
+                    if (this.getOneLine(in)) {
+                        this.state = 0;
+                    }
+                    break;
+                } else {
+                    System.out.println("Invalid Request");
                 }
-            }else if ((request.substring(0, 4).equals("MAIL"))) {
-                switch (state) {
-                    case 2:
-                        out.write((request + "\r\n").getBytes());
-                        if(this.getOneLine(in)){
-                            this.state=3;
-                        }
-                        break;
-                    default:
-                        System.out.println("Requête non valide");
-                        break;
-                }
-            } else if (request.substring(0, 4).equals("RCPT")) {
-                switch (state) {
-                    case 3:
-                        out.write((request + "\r\n").getBytes());
-                        if(this.getOneLine(in)){
-                            this.state=4;
-                        }
-                        break;
-                    case 4:
-                        out.write((request + "\r\n").getBytes());
-                        this.getOneLine(in);
-                        break;
-                    default:
-                        System.out.println("Requête non valide");
-                        break;
-                }
-            } else if(request.substring(0, 4).equals("RSET")){
-                 switch (state) {
-                     default:
-                         out.write((request + "\r\n").getBytes());
-                         if(this.getOneLine(in)){
-                             this.state=1;
-                         }
-                         break;
-                 }
-             } else if(request.substring(0, 4).equals("DATA")){
-                 switch (state) {
-                     default:
-                         out.write((request + "\r\n").getBytes());
-                         String response2 = in.readLine();
-                         System.out.println(response2);
-                         if(response2.contains("354")){
-                             out.write((writeMessage().toString()+"\r\n").getBytes());
-                         }
-                         break;
-                 }
-             } else if(request.substring(0, 4).equals("QUIT")){
-                 out.write((request + "\r\n").getBytes());
-                 if(this.getOneLine(in)){
-                     this.state=0;
-                 }
-                 break;
-             } else{
-                 System.out.println("Invalid Request");
-             }
+            }else {
+                System.out.println("Invalid Request");
+            }
         }
         socket.close();
 
@@ -226,21 +233,6 @@ public class Client {
                     }
         }while (responseSplitted.size()==0);
         return false;
-    }
-
-    private void getNextLines(BufferedReader in) throws IOException {
-        String response;
-        do {
-            response = in.readLine();
-            System.out.println(response);
-        } while(!response.equals("."));
-    }
-
-    private String getAPOPMD5(String pswd) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String str = this.timestamp+pswd;
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] checkSum = md.digest(str.getBytes("UTF-8"));
-        return new String(checkSum, "UTF-8").replace("\n","n");
     }
 }
 

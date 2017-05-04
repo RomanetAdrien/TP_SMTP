@@ -21,7 +21,7 @@ public class User {
     private User() {
         SAXBuilder sxb = new SAXBuilder();
         try {
-            document = sxb.build(new File("src/ServerPop3/users/users.xml"));
+            document = sxb.build(new File("src/serveur/users/users.xml"));
         } catch (Exception e) {
             System.out.println("error : "+e.getMessage());
         }
