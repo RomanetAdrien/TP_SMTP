@@ -244,7 +244,7 @@ public class Communication implements Runnable{
             out.write(("221 " + Server.domainName +" Service closing transmission channel.\r\n").getBytes());
 
         } catch (SocketException se) {
-            System.out.println("Connection closed : "+se.getMessage());
+            System.err.println("Connection closed : "+se.getMessage());
         }
     }
 
