@@ -109,14 +109,6 @@ public class Communication implements Runnable{
                             if (requestSplitted.size() > 2) {
                                 switch (state) {
                                     case 4: //SENDER
-                                        /*if (User.getInstance().isUser((requestSplitted.get(2)))) {
-                                            recipients.add(requestSplitted.get(2));
-                                            out.write(("250 OK\r\n").getBytes());
-                                            state = 5;
-                                        } else {
-                                            out.write("550 No such user here.\r\n".getBytes());
-                                        }
-                                        break;*/
                                     case 5: //RECEIVER
                                         if (User.getInstance().isUser((requestSplitted.get(2)))) {
                                             recipients.add(requestSplitted.get(2));
@@ -252,7 +244,7 @@ public class Communication implements Runnable{
             out.write(("221 " + Server.domainName +" Service closing transmission channel.\r\n").getBytes());
 
         } catch (SocketException se) {
-            System.out.println("Connection closed : "+se.getMessage());
+            System.err.println("Connection closed : "+se.getMessage());
         }
     }
 
