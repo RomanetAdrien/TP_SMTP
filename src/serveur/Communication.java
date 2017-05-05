@@ -109,14 +109,6 @@ public class Communication implements Runnable{
                             if (requestSplitted.size() > 2) {
                                 switch (state) {
                                     case 4: //SENDER
-                                        /*if (User.getInstance().isUser((requestSplitted.get(2)))) {
-                                            recipients.add(requestSplitted.get(2));
-                                            out.write(("250 OK\r\n").getBytes());
-                                            state = 5;
-                                        } else {
-                                            out.write("550 No such user here.\r\n".getBytes());
-                                        }
-                                        break;*/
                                     case 5: //RECEIVER
                                         if (User.getInstance().isUser((requestSplitted.get(2)))) {
                                             recipients.add(requestSplitted.get(2));
