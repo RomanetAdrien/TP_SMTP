@@ -19,6 +19,7 @@ public class Client {
     private String timestamp;
     private String user;
     private String usermail;
+    private String to;
     private int port;
     private int state;/*
         0 : Closed
@@ -131,12 +132,17 @@ public class Client {
                             out.write((request + "\r\n").getBytes());
                             if (this.getOneLine(in)) {
                                 this.state = 4;
+                                    to =  getTo(request);
+
+                                System.out.println(to);
                             }
                             break;
                         case 4:
                             out.write((request + "\r\n").getBytes());
-                            this.getOneLine(in);
-                            break;
+                            if (this.getOneLine(in)) {
+                                to = to + " ; " + getTo(request);
+                            }
+                                break;
                         default:
                             System.out.println("Invalid Request");
                             break;
@@ -160,6 +166,7 @@ public class Client {
                                 for(String msg : writeMessage()){
                                     out.write((msg+"\r\n").getBytes());
                                 }
+                                to=" ";
                             } if (this.getOneLine(in)) {
                                 this.state = 2;
                             }
@@ -200,7 +207,7 @@ public class Client {
         line += str;
         message.add(line);
 
-        line = "To: ";
+        line = "To: " + to + "\r\n";
 
         message.add(line);
 
@@ -234,5 +241,15 @@ public class Client {
         }while (responseSplitted.size()==0);
         return false;
     }
+
+    private String getTo(String request){
+        ArrayList<String> requestSplitted = new ArrayList<>();
+        Scanner s = new Scanner(request).useDelimiter("\\s+");
+        while (s.hasNext()) {
+            requestSplitted.add(s.next());
+        }
+        return  requestSplitted.get(2);
+    }
+
 }
 
