@@ -68,7 +68,7 @@ public class Client {
         Scanner s;
 
 
-        //on lit la première réponse du serveur
+        //on lit la première réponse du server
         response = in.readLine();
         System.out.println(response);
         strSplitted = new ArrayList<>();

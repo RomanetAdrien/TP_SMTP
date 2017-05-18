@@ -1,4 +1,4 @@
-package serveur.users;
+package server.users;
 
 /**
  * Created by theo on 20/03/17.
@@ -21,7 +21,7 @@ public class User {
     private User() {
         SAXBuilder sxb = new SAXBuilder();
         try {
-            document = sxb.build(new File("src/serveur/users/users.xml"));
+            document = sxb.build(new File("src/server/users/users.xml"));
         } catch (Exception e) {
             System.out.println("error : "+e.getMessage());
         }

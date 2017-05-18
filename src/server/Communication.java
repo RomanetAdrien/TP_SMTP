@@ -1,13 +1,10 @@
-package serveur;
+package server;
 
-import serveur.users.User;
+import server.users.User;
 import javax.net.ssl.SSLSocket;
 import java.io.*;
 import java.net.SocketException;
-import java.security.MessageDigest;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -110,7 +107,8 @@ public class Communication implements Runnable{
                                 switch (state) {
                                     case 4: //SENDER
                                     case 5: //RECEIVER
-                                        if (User.getInstance().isUser((requestSplitted.get(2)))) {
+                                        if (User.getInstance().isUser((requestSplitted.get(2)))
+                                                && !recipients.contains(requestSplitted.get(2))) {
                                             recipients.add(requestSplitted.get(2));
                                             out.write(("250 OK\r\n").getBytes());
                                         } else {
@@ -182,7 +180,7 @@ public class Communication implements Runnable{
                                 data.append(".\r\n");
                                 for (String dest : recipients){
                                     try {
-                                        FileWriter outFile = new FileWriter("src/serveur/msg/" + dest + ".txt",true);
+                                        FileWriter outFile = new FileWriter("src/server/msg/" + dest + ".txt",true);
                                         outFile.write("\r\n");
                                         outFile.write(data.toString());
                                         outFile.close();

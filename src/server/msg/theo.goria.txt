@@ -19,9 +19,9 @@ je vous ai envoyé  individuellement par mail les commentaires du TP POP3 questi
 
 Analyse & dossier  sur 20
 
-·         Graphe Automates serveur = /7
+·         Graphe Automates server = /7
 
-·         Table serveur= /3
+·         Table server= /3
 
 ·         Graphe Automate client = /5
 
@@ -31,7 +31,7 @@ Analyse & dossier  sur 20
 
 Réalisation/ 20
 
-·         démo  serveur  /12
+·         démo  server  /12
 
 ·         démo client /8
 Cordialement
