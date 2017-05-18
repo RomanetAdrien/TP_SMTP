@@ -28,3 +28,17 @@ Msg3 1/3.
 Msg3 2/3.
 Msg3 3/3.
 .
+
+Date: 2017/05/05 10:58:58
+From: Larry Skywalker <larryskywalker@hotmail.com>
+Subject: test
+To: test ; test2
+test message il fait beau
+.
+
+Date: 2017/05/05 11:03:15
+From: Larry Skywalker <larryskywalker@hotmail.com>
+Subject: test2
+To: test
+il fait toujours beau
+.

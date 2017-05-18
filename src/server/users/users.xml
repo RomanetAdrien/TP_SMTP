@@ -8,4 +8,8 @@
         <username>test</username>
         <password>test</password>
     </user>
+    <user>
+        <username>test2</username>
+        <password>test2</password>
+    </user>
 </users>
